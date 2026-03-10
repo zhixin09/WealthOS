@@ -1,0 +1,50 @@
+{
+  "id": "priya_sharma",
+  "name": "Priya Sharma",
+  "age": 38,
+  "risk_profile": "aggressive",
+  "jurisdiction": "Singapore",
+  "monthly_income_sgd": 65000,
+  "monthly_expenses_sgd": 18000,
+  "monthly_debt_payments_sgd": 0,
+  "investment_horizon": "15-20 years",
+  "financial_goals": [
+    "Early retirement at 50",
+    "Angel investing portfolio"
+  ],
+  "dependents": 0,
+  "assets": [
+    {
+      "id": "eq_nvda",
+      "name": "Nvidia",
+      "ticker": "NVDA",
+      "class": "equities",
+      "value_sgd": 1200000,
+      "currency": "SGD"
+    },
+    {
+      "id": "crypto_btc",
+      "name": "Bitcoin",
+      "ticker": "BTC",
+      "class": "digital_assets",
+      "value_sgd": 890000,
+      "currency": "SGD"
+    },
+    {
+      "id": "crypto_sol",
+      "name": "Solana",
+      "ticker": "SOL",
+      "class": "digital_assets",
+      "value_sgd": 320000,
+      "currency": "SGD"
+    },
+    {
+      "id": "cash_uob",
+      "name": "UOB Savings",
+      "class": "cash",
+      "value_sgd": 150000,
+      "currency": "SGD"
+    }
+  ],
+  "liabilities": []
+}

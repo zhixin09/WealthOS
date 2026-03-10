@@ -14,10 +14,12 @@ npm run lint             # ESLint: next/core-web-vitals + next/typescript
 
 # Backend
 cd services/orchestrator
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -e ".[dev]"
-python3 -m uvicorn app.main:app --reload --port 8000
-python3 -m pytest -q
-python3 -m pytest tests/test_analytics_engine.py -q   # single test file
+python -m uvicorn app.main:app --reload --port 8000
+python -m pytest -q
+python -m pytest tests/test_analytics_engine.py -q   # single test file
 ```
 
 ## Architecture
@@ -151,4 +153,4 @@ Net worth $535,520. Equities (6): AAPL, MSFT, NVDA, GOOGL, AMZN, VOO. Crypto (3)
 
 ### Tests
 
-Run `python3 -m pytest -q` from `services/orchestrator/`. Covers: health endpoint, intent classification, research search (v1+v2), client data loading, planning calculators, alerts workflow, analytics engine, wellness score, assembler, event pipeline, v2 endpoints, golden-path integration test.
+Run `python -m pytest -q` from `services/orchestrator/` with the local `.venv` active. Covers: health endpoint, intent classification, research search (v1+v2), client data loading, planning calculators, alerts workflow, analytics engine, wellness score, assembler, event pipeline, LLM JSON parsing, v2 endpoints, and the golden-path integration test.

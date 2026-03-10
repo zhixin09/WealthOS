@@ -1,0 +1,36 @@
+[
+  {
+    "id": "evt_crypto_001",
+    "headline": "Bitcoin drops 18% amid sweeping US regulatory crackdown",
+    "body": "Bitcoin and major altcoins fell sharply after US regulatory bodies announced comprehensive new crypto oversight measures, triggering liquidations across digital asset markets.",
+    "source": "Bloomberg",
+    "timestamp": "2026-03-11T14:00:00Z",
+    "event_type": "regulatory",
+    "entities": [
+      "Bitcoin",
+      "Crypto"
+    ]
+  },
+  {
+    "id": "evt_fed_001",
+    "headline": "Federal Reserve signals higher-for-longer rate path through 2027",
+    "body": "Fed Chair indicated rates will remain elevated through 2027, dashing hopes of near-term cuts. US equity indices fell 2.1% on the announcement.",
+    "source": "Financial Times",
+    "timestamp": "2026-03-10T18:00:00Z",
+    "event_type": "rate_decision",
+    "entities": [
+      "Federal Reserve"
+    ]
+  },
+  {
+    "id": "evt_nvidia_001",
+    "headline": "Nvidia faces export restrictions on advanced AI chips to Southeast Asia",
+    "body": "New US trade rules will limit Nvidia's ability to sell its most advanced AI training chips to several Southeast Asian markets, potentially impacting revenue projections.",
+    "source": "Reuters",
+    "timestamp": "2026-03-11T09:30:00Z",
+    "event_type": "trade_policy",
+    "entities": [
+      "Nvidia"
+    ]
+  }
+]

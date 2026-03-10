@@ -1,0 +1,55 @@
+{
+  "id": "david_lim",
+  "name": "David Lim",
+  "age": 58,
+  "risk_profile": "conservative",
+  "jurisdiction": "Singapore",
+  "monthly_income_sgd": 28000,
+  "monthly_expenses_sgd": 15000,
+  "monthly_debt_payments_sgd": 12000,
+  "investment_horizon": "3-5 years",
+  "financial_goals": [
+    "Retirement at 62",
+    "Downsize property"
+  ],
+  "dependents": 2,
+  "assets": [
+    {
+      "id": "bonds_sg",
+      "name": "SGS Bonds",
+      "class": "fixed_income",
+      "value_sgd": 800000,
+      "currency": "SGD"
+    },
+    {
+      "id": "re_jurong",
+      "name": "Taman Jurong Property",
+      "class": "real_estate",
+      "value_sgd": 1500000,
+      "currency": "SGD"
+    },
+    {
+      "id": "cash_ocbc",
+      "name": "OCBC Fixed Deposit",
+      "class": "cash",
+      "value_sgd": 420000,
+      "currency": "SGD"
+    },
+    {
+      "id": "cpf_ra",
+      "name": "CPF Retirement Account",
+      "class": "cpf",
+      "value_sgd": 310000,
+      "currency": "SGD"
+    }
+  ],
+  "liabilities": [
+    {
+      "id": "mort_jurong",
+      "name": "Taman Property Mortgage",
+      "value_sgd": 550000,
+      "monthly_payment_sgd": 12000,
+      "rate_pct": 3.2
+    }
+  ]
+}

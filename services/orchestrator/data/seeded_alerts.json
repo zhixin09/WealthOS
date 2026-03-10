@@ -1,0 +1,47 @@
+{
+  "evt_crypto_001": {
+    "subject": "Digital Asset Regulatory Shift — Portfolio Impact for Alex Chen",
+    "brief": "A sweeping US regulatory crackdown has triggered an 18% drop in Bitcoin, directly impacting Alex's digital asset holdings. His combined BTC, ETH, and SOL exposure represents 24.9% of gross assets (SGD 284,880), well above the 20% threshold for elevated digital asset risk. Given Alex's moderate risk profile and 10-15 year horizon, the recommendation is to avoid reactive liquidation but review position sizing against the updated regulatory landscape.",
+    "recommended_actions": [
+      "Review digital asset allocation — currently 24.9% vs target ceiling of 20% for moderate risk profiles",
+      "Ensure liquid reserves (currently SGD 157,500 / 21.9 months runway) remain untouched as a buffer",
+      "Schedule client conversation to discuss trimming SOL satellite position if regulatory clarity worsens"
+    ],
+    "house_view_citations": [
+      {
+        "doc": "digital-asset-risk-playbook.md",
+        "excerpt": "Concentrated crypto exposure increases drawdown risk because correlations across major digital assets often rise sharply during stress events."
+      }
+    ]
+  },
+  "evt_fed_001": {
+    "subject": "Fed Rate Path Extension — Portfolio Impact for Alex Chen",
+    "brief": "The Federal Reserve's higher-for-longer signal pressures broad US equity valuations. Alex holds SGD 141,166 in US equities (AAPL, MSFT, NVDA, GOOGL, AMZN, VOO), representing approximately 12.3% of gross assets. The direct impact is moderate given diversification across names, but the rate environment may compress growth multiples in the tech-heavy portion of the portfolio.",
+    "recommended_actions": [
+      "Monitor NVDA and growth-heavy positions for multiple compression over the next 2-3 sessions",
+      "No immediate action required — debt service ratio remains healthy at 20.3%",
+      "Consider gradual rotation from growth to value if rate guidance strengthens further"
+    ],
+    "house_view_citations": [
+      {
+        "doc": "asia-tech-equity-outlook.md",
+        "excerpt": "In concentrated growth portfolios, valuation discipline matters as much as narrative momentum."
+      }
+    ]
+  },
+  "evt_nvidia_001": {
+    "subject": "Nvidia Export Restrictions — Portfolio Impact for Alex Chen",
+    "brief": "New US trade restrictions on Nvidia's advanced AI chips to Southeast Asia could impact the company's revenue outlook. Alex holds SGD 30,122 in NVDA, representing 2.6% of gross assets. While the direct exposure is modest, Nvidia is the largest single equity position by conviction weighting. The restriction adds uncertainty to the AI infrastructure capex thesis underpinning the position.",
+    "recommended_actions": [
+      "Hold current NVDA position — exposure at 2.6% is within single-name concentration limits",
+      "Monitor upcoming Nvidia earnings guidance for revised Southeast Asia revenue projections",
+      "Review whether the AI infrastructure thesis remains intact after regulatory adjustment"
+    ],
+    "house_view_citations": [
+      {
+        "doc": "asia-tech-equity-outlook.md",
+        "excerpt": "Investors should differentiate between durable earnings beneficiaries and high-beta names that are merely sentiment proxies."
+      }
+    ]
+  }
+}

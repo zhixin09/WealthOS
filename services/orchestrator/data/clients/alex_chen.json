@@ -1,0 +1,165 @@
+{
+  "id": "alex_chen",
+  "name": "Alex Chen",
+  "age": 34,
+  "risk_profile": "moderate",
+  "jurisdiction": "Singapore",
+  "monthly_income_sgd": 18500,
+  "monthly_expenses_sgd": 7200,
+  "monthly_debt_payments_sgd": 3750,
+  "investment_horizon": "10-15 years",
+  "financial_goals": [
+    "Retirement at 55",
+    "Children's education fund",
+    "Property upgrade in 5 years"
+  ],
+  "dependents": 1,
+  "assets": [
+    {
+      "id": "eq_aapl",
+      "name": "Apple Inc",
+      "ticker": "AAPL",
+      "class": "equities",
+      "value_sgd": 14722.76,
+      "currency": "USD",
+      "raw_value": 10905.75
+    },
+    {
+      "id": "eq_msft",
+      "name": "Microsoft Corp",
+      "ticker": "MSFT",
+      "class": "equities",
+      "value_sgd": 17370.45,
+      "currency": "USD",
+      "raw_value": 12867.0
+    },
+    {
+      "id": "eq_nvda",
+      "name": "Nvidia Corp",
+      "ticker": "NVDA",
+      "class": "equities",
+      "value_sgd": 30121.88,
+      "currency": "USD",
+      "raw_value": 22312.5
+    },
+    {
+      "id": "eq_googl",
+      "name": "Alphabet Inc",
+      "ticker": "GOOGL",
+      "class": "equities",
+      "value_sgd": 12045.38,
+      "currency": "USD",
+      "raw_value": 8922.5
+    },
+    {
+      "id": "eq_amzn",
+      "name": "Amazon.com Inc",
+      "ticker": "AMZN",
+      "class": "equities",
+      "value_sgd": 10729.8,
+      "currency": "USD",
+      "raw_value": 7948.0
+    },
+    {
+      "id": "eq_voo",
+      "name": "Vanguard S&P 500 ETF",
+      "ticker": "VOO",
+      "class": "equities",
+      "value_sgd": 56176.2,
+      "currency": "USD",
+      "raw_value": 41612.0
+    },
+    {
+      "id": "crypto_btc",
+      "name": "Bitcoin",
+      "ticker": "BTC",
+      "class": "digital_assets",
+      "value_sgd": 165121.88,
+      "currency": "USD",
+      "raw_value": 122312.5
+    },
+    {
+      "id": "crypto_eth",
+      "name": "Ethereum",
+      "ticker": "ETH",
+      "class": "digital_assets",
+      "value_sgd": 71563.5,
+      "currency": "USD",
+      "raw_value": 53010.0
+    },
+    {
+      "id": "crypto_sol",
+      "name": "Solana",
+      "ticker": "SOL",
+      "class": "digital_assets",
+      "value_sgd": 48195.0,
+      "currency": "USD",
+      "raw_value": 35700.0
+    },
+    {
+      "id": "re_condo",
+      "name": "District 15 Condo",
+      "class": "real_estate",
+      "value_sgd": 920000,
+      "currency": "SGD"
+    },
+    {
+      "id": "cash_dbs",
+      "name": "DBS Savings",
+      "class": "cash",
+      "value_sgd": 45000,
+      "currency": "SGD"
+    },
+    {
+      "id": "cash_fd",
+      "name": "DBS Fixed Deposit",
+      "class": "cash",
+      "value_sgd": 80000,
+      "currency": "SGD"
+    },
+    {
+      "id": "cash_ocbc",
+      "name": "OCBC Savings",
+      "class": "cash",
+      "value_sgd": 32500,
+      "currency": "SGD"
+    },
+    {
+      "id": "cpf_oa",
+      "name": "CPF Ordinary Account",
+      "class": "cpf",
+      "value_sgd": 125000,
+      "currency": "SGD"
+    },
+    {
+      "id": "cpf_sa",
+      "name": "CPF Special Account",
+      "class": "cpf",
+      "value_sgd": 68000,
+      "currency": "SGD"
+    },
+    {
+      "id": "cpf_ma",
+      "name": "CPF Medisave",
+      "class": "cpf",
+      "value_sgd": 42000,
+      "currency": "SGD"
+    }
+  ],
+  "liabilities": [
+    {
+      "id": "mort_condo",
+      "name": "Condo Mortgage (DBS)",
+      "value_sgd": 285000,
+      "monthly_payment_sgd": 2800,
+      "rate_pct": 2.6
+    },
+    {
+      "id": "car_loan",
+      "name": "Car Loan (OCBC)",
+      "value_sgd": 27000,
+      "monthly_payment_sgd": 950,
+      "rate_pct": 2.78
+    }
+  ]
+}

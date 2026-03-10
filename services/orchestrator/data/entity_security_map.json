@@ -1,0 +1,33 @@
+{
+  "Bitcoin": [
+    "BTC"
+  ],
+  "Crypto": [
+    "BTC",
+    "ETH",
+    "SOL"
+  ],
+  "Federal Reserve": [
+    "VOO",
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "GOOGL",
+    "AMZN"
+  ],
+  "Nvidia": [
+    "NVDA"
+  ],
+  "Tesla": [
+    "TSLA"
+  ],
+  "Apple": [
+    "AAPL"
+  ],
+  "Ethereum": [
+    "ETH"
+  ],
+  "Solana": [
+    "SOL"
+  ]
+}

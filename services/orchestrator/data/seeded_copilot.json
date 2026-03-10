@@ -1,0 +1,76 @@
+{
+  "top_3_actions": {
+    "answer": "The immediate priorities are to review Alex Chen's digital asset sizing, preserve the existing cash buffer, and prepare a client discussion on position-level concentration. Digital assets are above the moderate-risk ceiling, liquidity is strong enough to avoid forced selling, and the portfolio would benefit from a clearer rebalancing path if volatility persists.",
+    "structured_actions": [
+      {
+        "rank": 1,
+        "action": "Reassess digital asset exposure against the house ceiling for moderate-risk clients",
+        "rationale": "BTC, ETH, and SOL together sit above the policy guardrail and drive most of the portfolio's event sensitivity.",
+        "urgency": "high"
+      },
+      {
+        "rank": 2,
+        "action": "Ring-fence liquid reserves from any tactical rebalancing",
+        "rationale": "Alex has a strong liquidity runway, and that reserve should remain intact while the portfolio absorbs volatility.",
+        "urgency": "medium"
+      },
+      {
+        "rank": 3,
+        "action": "Schedule a review of single-name conviction positions",
+        "rationale": "Concentration remains manageable overall, but NVDA and digital assets need explicit monitoring during stress periods.",
+        "urgency": "medium"
+      }
+    ]
+  },
+  "digital_exposure": {
+    "answer": "Alex Chen's digital asset sleeve is elevated for a moderate-risk profile. The position can remain strategic, but the mix of BTC, ETH, and SOL should be reviewed against downside tolerance and the advisor's target allocation framework.",
+    "structured_actions": [
+      {
+        "rank": 1,
+        "action": "Confirm the target range for digital assets in the client IPS",
+        "rationale": "The current sleeve is large enough that policy clarity matters more than market timing.",
+        "urgency": "high"
+      },
+      {
+        "rank": 2,
+        "action": "Reduce satellite-token exposure before core BTC exposure",
+        "rationale": "SOL contributes more volatility than the core allocation without improving resilience.",
+        "urgency": "medium"
+      }
+    ]
+  },
+  "property_upgrade": {
+    "answer": "A property upgrade is feasible only if Alex preserves a full-year liquidity buffer after the down payment and avoids funding it through forced sales of long-term assets. Housing equity is already a large part of the balance sheet, so any upgrade should be framed as a lifestyle decision rather than a diversification move.",
+    "structured_actions": [
+      {
+        "rank": 1,
+        "action": "Model the post-down-payment liquidity floor before proceeding",
+        "rationale": "The decision is driven by retained liquidity, not just mortgage affordability.",
+        "urgency": "high"
+      },
+      {
+        "rank": 2,
+        "action": "Avoid financing the upgrade with core growth equity liquidation",
+        "rationale": "Selling long-horizon assets to fund housing increases concentration in property.",
+        "urgency": "medium"
+      }
+    ]
+  },
+  "house_view": {
+    "answer": "The house view remains constructive on diversified tech exposure and cautious on concentrated digital assets. For Alex Chen, that means keeping a disciplined core in broad equities, monitoring AI-related single names carefully, and treating crypto as a sized satellite sleeve rather than a portfolio anchor.",
+    "structured_actions": [
+      {
+        "rank": 1,
+        "action": "Maintain diversified core equity exposure",
+        "rationale": "Broad-market holdings absorb macro shocks better than concentrated growth names.",
+        "urgency": "medium"
+      },
+      {
+        "rank": 2,
+        "action": "Keep crypto in a satellite allocation framework",
+        "rationale": "The house view expects higher stress correlations across major digital assets.",
+        "urgency": "medium"
+      }
+    ]
+  }
+}
