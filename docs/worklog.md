@@ -6,9 +6,19 @@
 | --- | --- | --- | --- |
 | Backend v2 analytics/events/advisory + shared API contracts | Codex | Done | Implemented the Wealth Wellness Hub v2 backend surface in `services/orchestrator/**` and updated the shared contracts in `src/lib/types.ts` and `src/lib/api.ts`. Frontend-owned `src/app/**` and `src/components/**` remained untouched. |
 | Adviser terminal frontend (`src/app/**`, `src/components/**`, `src/app/globals.css`) | Codex | In Progress | Rebuilding dashboard, alerts, planning, and research around a shared active-client context and v2-compatible frontend adapters. |
-| README setup docs | Codex | Done | Beginner-first onboarding now covers blank-machine setup, backend dependency install, and two-terminal local startup. |
+| README repo description | Codex | Done | Replaced the setup-first README with a short GitHub-facing project description aligned to the Wealth Wellness Hub problem statement. |
+| Alerts RM brief editing | Codex | Done | Adviser briefs now support session-only RM editing, preview mode, reset-to-AI, and review gating before send. |
 
 ## Handoff Notes
+
+### 2026-03-11 - README project description rewrite
+
+- Owner: Codex
+- Status: done
+- Changed: Replaced the setup-guide README with a concise GitHub-facing project description focused on the Wealth Wellness Hub problem statement, solution, and RM value.
+- Files: `README.md`, `docs/worklog.md`
+- Risks: the repo landing page is now submission-friendly, but local setup instructions no longer live in the README.
+- Next: if the team still wants onboarding docs, move the old setup guide into a separate `docs/setup.md` or submission appendix.
 
 ### 2026-03-11 - Wealth Wellness Hub v2 backend
 
@@ -36,3 +46,12 @@
 - Files: `README.md`, `docs/worklog.md`
 - Risks: the guide is macOS-first; Windows and Linux users still need equivalent package-manager and shell-profile steps.
 - Next: restore the broader `docs/` set referenced by `AGENTS.md` or remove those stale references if the repo is intentionally moving to a smaller doc surface.
+
+### 2026-03-11 - Alerts RM brief editing
+
+- Owner: Codex
+- Status: done
+- Changed: Converted the alerts adviser brief from a read-only AI output into a session-only RM draft workflow with edit/preview toggle, reset-to-AI, review gating before send, and overwrite confirmation before regenerating a dirty draft.
+- Files: `docs/worklog.md`, `docs/plans/2026-03-11-alert-brief-rm-editing-design.md`, `docs/plans/2026-03-11-alert-brief-rm-editing.md`, `src/app/alerts/page.tsx`, `src/components/adviser/alert-brief-panel.tsx`, `src/components/adviser/alert-brief-draft.ts`, `src/components/adviser/alert-brief-draft.test.ts`
+- Risks: draft edits are still session-only and the send action remains a demo toast rather than a persisted compliance or client-delivery workflow.
+- Next: persist adviser drafts across refreshes and connect send/review states to a real approval or outbound workflow when the product is ready for that layer.

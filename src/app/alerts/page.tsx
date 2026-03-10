@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 
+import {
+  cloneAlertBriefDraft,
+  hasAlertBriefDraftChanges,
+  updateAlertBriefAction,
+} from "@/components/adviser/alert-brief-draft";
 import { AlertBriefPanel } from "@/components/adviser/alert-brief-panel";
 import {
   generateAlertBrief,
@@ -25,11 +30,18 @@ export default function AlertsPage() {
   const [events, setEvents] = useState<SeededEvent[]>([]);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [impact, setImpact] = useState<ImpactManifest | null>(null);
-  const [brief, setBrief] = useState<AlertBrief | null>(null);
+  const [originalBrief, setOriginalBrief] = useState<AlertBrief | null>(null);
+  const [draftBrief, setDraftBrief] = useState<AlertBrief | null>(null);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingImpact, setIsLoadingImpact] = useState(false);
   const [isLoadingBrief, setIsLoadingBrief] = useState(false);
+  const [isEditingDraft, setIsEditingDraft] = useState(false);
+  const [isReviewedByRm, setIsReviewedByRm] = useState(false);
   const [view, setView] = useState<"events" | "impact" | "brief">("events");
+  const isDraftDirty =
+    originalBrief && draftBrief
+      ? hasAlertBriefDraftChanges(originalBrief, draftBrief)
+      : false;
 
   useEffect(() => {
     let cancelled = false;
@@ -64,17 +76,23 @@ export default function AlertsPage() {
     setView("events");
     setSelectedEventId(null);
     setImpact(null);
-    setBrief(null);
+    setOriginalBrief(null);
+    setDraftBrief(null);
     setIsLoadingImpact(false);
     setIsLoadingBrief(false);
+    setIsEditingDraft(false);
+    setIsReviewedByRm(false);
   }, [activeClientId]);
 
   async function handleEventClick(eventId: string) {
     setSelectedEventId(eventId);
     setView("impact");
     setImpact(null);
-    setBrief(null);
+    setOriginalBrief(null);
+    setDraftBrief(null);
     setIsLoadingImpact(true);
+    setIsEditingDraft(false);
+    setIsReviewedByRm(false);
 
     try {
       const response = await runEventImpact(eventId, activeClientId);
@@ -91,15 +109,32 @@ export default function AlertsPage() {
       return;
     }
 
+    if (
+      originalBrief &&
+      draftBrief &&
+      hasAlertBriefDraftChanges(originalBrief, draftBrief) &&
+      !window.confirm(
+        "This will replace the current RM-edited draft with a new AI draft. Continue?",
+      )
+    ) {
+      return;
+    }
+
     setIsLoadingBrief(true);
     setView("brief");
-    setBrief(null);
+    setOriginalBrief(null);
+    setDraftBrief(null);
+    setIsEditingDraft(false);
+    setIsReviewedByRm(false);
 
     try {
       const response = await generateAlertBrief(selectedEventId, activeClientId);
-      setBrief(response);
+      const nextOriginal = cloneAlertBriefDraft(response);
+      setOriginalBrief(nextOriginal);
+      setDraftBrief(cloneAlertBriefDraft(nextOriginal));
     } catch {
-      setBrief(null);
+      setOriginalBrief(null);
+      setDraftBrief(null);
     } finally {
       setIsLoadingBrief(false);
     }
@@ -162,10 +197,51 @@ export default function AlertsPage() {
       ) : null}
 
       {view === "brief" ? (
-        isLoadingBrief && !brief ? (
+        isLoadingBrief && !draftBrief ? (
           <LoadingSpinner label="Generating adviser brief" />
-        ) : brief ? (
-          <AlertBriefPanel brief={brief} onBack={() => setView("impact")} />
+        ) : draftBrief && originalBrief ? (
+          <AlertBriefPanel
+            brief={draftBrief}
+            isEditing={isEditingDraft}
+            isDirty={isDraftDirty}
+            isReviewed={isReviewedByRm}
+            onBack={() => setView("impact")}
+            onToggleEditing={() => setIsEditingDraft((current) => !current)}
+            onSubjectChange={(value) => {
+              setDraftBrief((current) =>
+                current
+                  ? {
+                      ...current,
+                      subject: value,
+                    }
+                  : current,
+              );
+              setIsReviewedByRm(false);
+            }}
+            onBriefChange={(value) => {
+              setDraftBrief((current) =>
+                current
+                  ? {
+                      ...current,
+                      brief: value,
+                    }
+                  : current,
+              );
+              setIsReviewedByRm(false);
+            }}
+            onActionChange={(index, value) => {
+              setDraftBrief((current) =>
+                current ? updateAlertBriefAction(current, index, value) : current,
+              );
+              setIsReviewedByRm(false);
+            }}
+            onReset={() => {
+              setDraftBrief(cloneAlertBriefDraft(originalBrief));
+              setIsEditingDraft(false);
+              setIsReviewedByRm(false);
+            }}
+            onReviewedChange={(value) => setIsReviewedByRm(value)}
+          />
         ) : (
           <Card className="rounded-lg border border-dashed border-zinc-800 bg-zinc-900/85">
             <CardContent className="py-16 text-sm text-zinc-500">
