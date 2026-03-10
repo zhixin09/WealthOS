@@ -1,0 +1,152 @@
+[
+    {
+        "id": "txn_001",
+        "date": "2026-03-10",
+        "type": "buy",
+        "asset": "NVDA",
+        "category": "Equities",
+        "amount": 4462.50,
+        "quantity": 5,
+        "description": "Buy 5 shares NVDA"
+    },
+    {
+        "id": "txn_002",
+        "date": "2026-03-09",
+        "type": "deposit",
+        "asset": "DBS Savings",
+        "category": "Bank",
+        "amount": 5500,
+        "quantity": null,
+        "description": "Salary deposit"
+    },
+    {
+        "id": "txn_003",
+        "date": "2026-03-08",
+        "type": "sell",
+        "asset": "ETH",
+        "category": "Crypto",
+        "amount": 6840,
+        "quantity": 2,
+        "description": "Sell 2 ETH"
+    },
+    {
+        "id": "txn_004",
+        "date": "2026-03-07",
+        "type": "buy",
+        "asset": "VOO",
+        "category": "Equities",
+        "amount": 5201.50,
+        "quantity": 10,
+        "description": "Buy 10 shares VOO"
+    },
+    {
+        "id": "txn_005",
+        "date": "2026-03-06",
+        "type": "withdrawal",
+        "asset": "OCBC Savings",
+        "category": "Bank",
+        "amount": 3000,
+        "quantity": null,
+        "description": "Transfer to brokerage"
+    },
+    {
+        "id": "txn_006",
+        "date": "2026-03-05",
+        "type": "buy",
+        "asset": "BTC",
+        "category": "Crypto",
+        "amount": 9785,
+        "quantity": 0.1,
+        "description": "Buy 0.1 BTC"
+    },
+    {
+        "id": "txn_007",
+        "date": "2026-03-04",
+        "type": "dividend",
+        "asset": "AAPL",
+        "category": "Equities",
+        "amount": 112.50,
+        "quantity": null,
+        "description": "AAPL quarterly dividend"
+    },
+    {
+        "id": "txn_008",
+        "date": "2026-03-03",
+        "type": "payment",
+        "asset": "Mortgage",
+        "category": "Liability",
+        "amount": 2800,
+        "quantity": null,
+        "description": "Monthly mortgage payment"
+    },
+    {
+        "id": "txn_009",
+        "date": "2026-03-02",
+        "type": "buy",
+        "asset": "SOL",
+        "category": "Crypto",
+        "amount": 3570,
+        "quantity": 20,
+        "description": "Buy 20 SOL"
+    },
+    {
+        "id": "txn_010",
+        "date": "2026-03-01",
+        "type": "sell",
+        "asset": "GOOGL",
+        "category": "Equities",
+        "amount": 1784.50,
+        "quantity": 10,
+        "description": "Sell 10 shares GOOGL"
+    },
+    {
+        "id": "txn_011",
+        "date": "2026-02-28",
+        "type": "deposit",
+        "asset": "DBS Savings",
+        "category": "Bank",
+        "amount": 5500,
+        "quantity": null,
+        "description": "Salary deposit"
+    },
+    {
+        "id": "txn_012",
+        "date": "2026-02-27",
+        "type": "payment",
+        "asset": "Car Loan",
+        "category": "Liability",
+        "amount": 950,
+        "quantity": null,
+        "description": "Monthly car loan payment"
+    },
+    {
+        "id": "txn_013",
+        "date": "2026-02-26",
+        "type": "buy",
+        "asset": "MSFT",
+        "category": "Equities",
+        "amount": 4289,
+        "quantity": 10,
+        "description": "Buy 10 shares MSFT"
+    },
+    {
+        "id": "txn_014",
+        "date": "2026-02-25",
+        "type": "interest",
+        "asset": "DBS Fixed Deposit",
+        "category": "Bank",
+        "amount": 233.33,
+        "quantity": null,
+        "description": "Monthly FD interest"
+    },
+    {
+        "id": "txn_015",
+        "date": "2026-02-24",
+        "type": "buy",
+        "asset": "ETH",
+        "category": "Crypto",
+        "amount": 6840,
+        "quantity": 2,
+        "description": "Buy 2 ETH"
+    }
+]

@@ -1,0 +1,214 @@
+{
+    "clientProfile": {
+        "name": "Alex Chen",
+        "age": 34,
+        "jurisdiction": "Singapore",
+        "riskTolerance": "moderate",
+        "dependents": 1,
+        "monthlyGrossIncome": 18500,
+        "monthlyFixedExpenses": 7200,
+        "investmentHorizon": "10-15 years",
+        "financialGoals": [
+            "Retirement at 55",
+            "Children's education fund",
+            "Property upgrade in 5 years"
+        ]
+    },
+    "netWorth": {
+        "totalAssets": 847520,
+        "totalLiabilities": 312000,
+        "netWorth": 535520,
+        "lastUpdated": "2026-03-10T14:00:00Z",
+        "monthlyChange": 12340,
+        "monthlyChangePercent": 2.36
+    },
+    "assets": {
+        "equities": [
+            {
+                "symbol": "AAPL",
+                "name": "Apple Inc.",
+                "shares": 45,
+                "avgCost": 165.20,
+                "currentPrice": 242.35,
+                "value": 10905.75,
+                "change24h": 1.23
+            },
+            {
+                "symbol": "MSFT",
+                "name": "Microsoft Corp.",
+                "shares": 30,
+                "avgCost": 310.50,
+                "currentPrice": 428.90,
+                "value": 12867.00,
+                "change24h": -0.45
+            },
+            {
+                "symbol": "NVDA",
+                "name": "NVIDIA Corp.",
+                "shares": 25,
+                "avgCost": 450.00,
+                "currentPrice": 892.50,
+                "value": 22312.50,
+                "change24h": 3.12
+            },
+            {
+                "symbol": "GOOGL",
+                "name": "Alphabet Inc.",
+                "shares": 50,
+                "avgCost": 135.80,
+                "currentPrice": 178.45,
+                "value": 8922.50,
+                "change24h": 0.67
+            },
+            {
+                "symbol": "AMZN",
+                "name": "Amazon.com Inc.",
+                "shares": 40,
+                "avgCost": 145.00,
+                "currentPrice": 198.70,
+                "value": 7948.00,
+                "change24h": -0.89
+            },
+            {
+                "symbol": "VOO",
+                "name": "Vanguard S&P 500 ETF",
+                "shares": 80,
+                "avgCost": 380.00,
+                "currentPrice": 520.15,
+                "value": 41612.00,
+                "change24h": 0.34
+            }
+        ],
+        "crypto": [
+            {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "quantity": 1.25,
+                "avgCost": 42000,
+                "currentPrice": 97850,
+                "value": 122312.50,
+                "change24h": 2.45
+            },
+            {
+                "symbol": "ETH",
+                "name": "Ethereum",
+                "quantity": 15.5,
+                "avgCost": 2200,
+                "currentPrice": 3420,
+                "value": 53010.00,
+                "change24h": -1.34
+            },
+            {
+                "symbol": "SOL",
+                "name": "Solana",
+                "quantity": 200,
+                "avgCost": 85,
+                "currentPrice": 178.50,
+                "value": 35700.00,
+                "change24h": 4.56
+            }
+        ],
+        "realEstate": [
+            {
+                "name": "Primary Residence - Condo",
+                "purchasePrice": 850000,
+                "currentValue": 920000,
+                "location": "Singapore, District 15"
+            }
+        ],
+        "bankDeposits": [
+            {
+                "bank": "DBS Bank",
+                "accountType": "Savings",
+                "balance": 45000
+            },
+            {
+                "bank": "DBS Bank",
+                "accountType": "Fixed Deposit",
+                "balance": 80000,
+                "maturityDate": "2026-09-15",
+                "interestRate": 3.5
+            },
+            {
+                "bank": "OCBC Bank",
+                "accountType": "Savings",
+                "balance": 32500
+            }
+        ],
+        "cpf": {
+            "ordinary": 125000,
+            "special": 68000,
+            "medisave": 42000
+        }
+    },
+    "liabilities": [
+        {
+            "type": "Mortgage",
+            "institution": "DBS Bank",
+            "outstanding": 285000,
+            "monthlyPayment": 2800,
+            "interestRate": 2.6,
+            "remainingYears": 18
+        },
+        {
+            "type": "Car Loan",
+            "institution": "OCBC Bank",
+            "outstanding": 27000,
+            "monthlyPayment": 950,
+            "interestRate": 2.78,
+            "remainingYears": 3
+        }
+    ],
+    "healthScore": {
+        "overall": 78,
+        "categories": {
+            "savingsRate": {
+                "score": 85,
+                "label": "Excellent"
+            },
+            "debtRatio": {
+                "score": 72,
+                "label": "Good"
+            },
+            "diversification": {
+                "score": 80,
+                "label": "Very Good"
+            },
+            "emergencyFund": {
+                "score": 68,
+                "label": "Fair"
+            },
+            "investmentGrowth": {
+                "score": 82,
+                "label": "Very Good"
+            }
+        }
+    },
+    "assetAllocation": [
+        {
+            "category": "Equities",
+            "value": 104567.75,
+            "percentage": 12.3
+        },
+        {
+            "category": "Crypto",
+            "value": 211022.50,
+            "percentage": 24.9
+        },
+        {
+            "category": "Real Estate",
+            "value": 920000,
+            "percentage": 46.5
+        },
+        {
+            "category": "Bank Deposits",
+            "value": 157500,
+            "percentage": 10.8
+        },
+        {
+            "category": "CPF",
+            "value": 235000,
+            "percentage": 5.5
+        }
+    ]
+}

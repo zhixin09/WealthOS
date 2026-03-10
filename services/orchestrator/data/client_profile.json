@@ -1,0 +1,15 @@
+{
+  "name": "Alex Chen",
+  "age": 34,
+  "jurisdiction": "Singapore",
+  "riskTolerance": "moderate",
+  "dependents": 1,
+  "monthlyGrossIncome": 18500,
+  "monthlyFixedExpenses": 7200,
+  "investmentHorizon": "10-15 years",
+  "financialGoals": [
+    "Retirement at 55",
+    "Children's education fund",
+    "Property upgrade in 5 years"
+  ]
+}
