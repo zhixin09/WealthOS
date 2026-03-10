@@ -1,93 +1,199 @@
 # WealthOS
 
-WealthOS is an institutional portfolio intelligence and workflow platform prototype for investment banks, private banks, and asset managers.
+WealthOS is a prototype portfolio intelligence platform for wealth and asset management workflows.
 
-The current repo includes:
+This repo includes:
 
-- a Next.js portfolio dashboard
-- first-pass `research`, `planning`, and `alerts` workflow surfaces
+- a Next.js frontend
 - a small FastAPI orchestrator backend
-- local mock and seeded data instead of live institutional integrations
-- no production database, entitlement model, or execution layer yet
+- mock portfolio data for the dashboard
+- seeded research, planning, and alerts workflows
 
-## Prerequisites
+## Setup Guide
 
+This guide is written for someone starting from a blank macOS machine.
+
+If you already have `git`, Homebrew, `nvm`, Node.js `22`, and Python `3.11+`, you can skip to [Clone The Repo](#clone-the-repo).
+
+## What You Need Installed
+
+Install these tools first:
+
+- Git
+- Homebrew
+- `nvm`
 - Node.js `22`
-- npm
+- Python `3.11+`
 
-This repo includes [`.nvmrc`](.nvmrc), so if you use `nvm`:
+## Install The Base Tools On macOS
+
+### 1. Install Apple command line tools
 
 ```bash
-nvm use
+xcode-select --install
 ```
 
-## Quick Start
-
-For a new collaborator, these are the exact steps:
+### 2. Install Homebrew
 
 ```bash
-git clone <repo-url>
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### 3. Install Git, `nvm`, and Python
+
+```bash
+brew install git nvm python@3.11
+```
+
+### 4. Configure `nvm` for the default macOS shell
+
+```bash
+mkdir -p ~/.nvm
+echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
+echo '[ -s "$(brew --prefix nvm)/nvm.sh" ] && . "$(brew --prefix nvm)/nvm.sh"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### 5. Check the tools are available
+
+```bash
+git --version
+brew --version
+nvm --version
+python3.11 --version
+```
+
+## Clone The Repo
+
+```bash
+git clone https://github.com/zhixin09/WealthOS.git
 cd WealthOS
-nvm use
+```
+
+## Install The Frontend
+
+The repo pins Node.js `22` in [`.nvmrc`](.nvmrc).
+
+```bash
+nvm install 22
+nvm use 22
 npm install
+```
+
+## Install The Backend
+
+Create a Python virtual environment and install the backend dependencies:
+
+```bash
 cd services/orchestrator
-python3 -m uvicorn app.main:app --reload --port 8000
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
 cd ../..
+```
+
+## Run The App
+
+Open two Terminal windows or tabs.
+
+### Terminal 1: start the backend
+
+```bash
+cd /path/to/WealthOS/services/orchestrator
+source .venv/bin/activate
+python -m uvicorn app.main:app --reload --port 8000
+```
+
+### Terminal 2: start the frontend
+
+```bash
+cd /path/to/WealthOS
+source ~/.zshrc
+nvm use 22
 npm run dev
 ```
 
 Then open [http://localhost:3000](http://localhost:3000).
 
-The frontend expects the orchestration service at `http://127.0.0.1:8000` by default. To point it elsewhere, set `NEXT_PUBLIC_ORCHESTRATOR_URL`.
+The frontend calls the backend at `http://127.0.0.1:8000` by default.
 
-## Run Modes
+## Verify It Worked
 
-### Development
+Once both servers are running, these routes should load:
 
-Use this for normal local work. Run both services in separate terminals:
+- `/` for the dashboard
+- `/research` for research Q&A
+- `/planning` for planning scenarios
+- `/alerts` for alert workflows
 
-```bash
-cd services/orchestrator
-python3 -m uvicorn app.main:app --reload --port 8000
-```
+## Useful Commands
 
-```bash
-npm run dev
-```
-
-This starts the FastAPI backend and the Next.js dev server with the stable webpack pipeline.
-
-### Production
-
-Use this only if you want to test the production build locally:
-
-```bash
-npm run build
-npm run start
-```
-
-Important: `npm run start` serves the compiled production output from `.next/`. It will not work correctly if the production build is stale or missing.
-
-## Common Commands
+From the repo root:
 
 ```bash
 npm run dev
-npm run build
-npm run start
 npm run lint
+npm run build
+npm run start
 ```
 
+From `services/orchestrator/`:
+
 ```bash
-cd services/orchestrator
-python3 -m pytest -q
-python3 -m uvicorn app.main:app --reload --port 8000
+source .venv/bin/activate
+python -m pytest -q
+python -m uvicorn app.main:app --reload --port 8000
 ```
 
 ## Troubleshooting
 
+### `nvm: command not found`
+
+Run:
+
+```bash
+source ~/.zshrc
+```
+
+If that does not work, open a new Terminal window and try again.
+
+### `nvm use` says Node `22` is not installed
+
+Run:
+
+```bash
+nvm install 22
+nvm use 22
+```
+
+### `python3.11: command not found`
+
+Run:
+
+```bash
+brew install python@3.11
+```
+
+Then check:
+
+```bash
+python3.11 --version
+```
+
+### `npm run dev` renders unstyled HTML
+
+Use the default webpack dev server:
+
+```bash
+npm run dev
+```
+
+Avoid `npm run dev:turbopack` for now. On this project, Turbopack can serve a broken CSS URL and leave the app unstyled.
+
 ### `npm run start` fails with `routesManifest.dataRoutes is not iterable`
 
-That usually means the `.next/` production build is stale or incomplete.
+That usually means the production build is stale or incomplete.
 
 Run:
 
@@ -97,44 +203,22 @@ npm run build
 npm run start
 ```
 
-If you are just trying to work on the app locally, use `npm run dev` instead.
-
-### `npm run dev` renders unstyled HTML
-
-If the app loads but looks like raw HTML, the dev server is likely serving a broken CSS asset.
-
-Use the default script:
-
-```bash
-npm run dev
-```
-
-Avoid `npm run dev:turbopack` for now. In this project on Next.js `15.5.12`, Turbopack can emit a CSS URL that returns `404`, which leaves the dashboard markup visible but unstyled.
-
 ### Build fails with `Cannot find module '../lightningcss.darwin-arm64.node'`
 
-That usually means dependencies were installed under the wrong Node.js or CPU target.
+That usually means packages were installed under the wrong Node.js version or architecture.
 
 Run:
 
 ```bash
-nvm use
+nvm use 22
 rm -rf node_modules
 npm install
 npm run build
 ```
 
-### Port 3000 is already in use
+### Port `3000` is already in use
 
-Stop the existing dev or production server, or let Next.js choose another port automatically.
-
-## Current Route Map
-
-- `/` - main wealth dashboard
-- `/research` - seeded research corpus with cited answers
-- `/planning` - deterministic planning scenarios with recommendation output
-- `/alerts` - portfolio-aware event alerts with recommendations
-- `/api/portfolio` - mock portfolio JSON API
+Stop the other Next.js server or let Next.js choose another port automatically.
 
 ## Project Structure
 
@@ -143,29 +227,19 @@ src/
   app/                  Route entrypoints and API routes
   components/
     dashboard/          Dashboard-specific widgets
-    shared/             Shared shell components like the sidebar
+    shared/             Shared shell components
     ui/                 Reusable UI primitives
   data/                 Mock JSON fixtures
-  lib/                  Small shared utilities
-docs/
-  architecture.md       Codebase structure and extension guidance
-  product-strategy-brief.md
-  worklog.md            Lightweight ownership and handoff log
+  lib/                  Shared frontend helpers
 services/
-  orchestrator/         FastAPI backend for AI workflow orchestration
+  orchestrator/         FastAPI backend for workflow orchestration
+docs/
+  worklog.md            Lightweight handoff log
 ```
 
-## Documentation
+## Repo Notes
 
-- [Product Strategy Brief](docs/product-strategy-brief.md)
-- [Architecture](docs/architecture.md)
-- [Worklog](docs/worklog.md)
-- [Agent Instructions](AGENTS.md)
-
-## Current Notes
-
-- The frontend can run without app-specific env vars, but the backend can optionally use `FINNHUB_API_KEY` and `ALPHA_VANTAGE_API_KEY`.
-- Mock data lives in `src/data/mock-portfolio.json` and `src/data/mock-transactions.json`.
-- Shared UI primitives in `src/components/ui/` should be changed carefully because multiple routes and widgets depend on them.
-- `services/orchestrator/` is the backend for research, alerts, and planning workflows.
-- The canonical product definition now lives in `docs/product-strategy-brief.md`.
+- Mock portfolio data lives in `src/data/`.
+- The orchestrator backend lives in `services/orchestrator/`.
+- Optional market-data environment variables can be added later if needed, but the demo works without them.
+- Collaboration rules live in [AGENTS.md](AGENTS.md).

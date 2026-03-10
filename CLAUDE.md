@@ -14,192 +14,141 @@ npm run lint             # ESLint: next/core-web-vitals + next/typescript
 
 # Backend
 cd services/orchestrator
+pip install -e ".[dev]"
 python3 -m uvicorn app.main:app --reload --port 8000
 python3 -m pytest -q
-python3 -m pytest tests/test_research_store.py -q   # single test file
+python3 -m pytest tests/test_analytics_engine.py -q   # single test file
 ```
 
 ## Architecture
 
-Two runtimes: a Next.js 15 App Router frontend (`src/`) and a FastAPI orchestrator backend (`services/orchestrator/`). The frontend calls the backend via `src/lib/api.ts` → `NEXT_PUBLIC_ORCHESTRATOR_URL` (default `http://127.0.0.1:8000`). Path alias: `@/*` → `./src/*`.
+Two runtimes: Next.js 15 App Router frontend (`src/`) + FastAPI orchestrator backend (`services/orchestrator/`). Frontend calls backend via `src/lib/api.ts` → `NEXT_PUBLIC_ORCHESTRATOR_URL` (default `http://127.0.0.1:8000`). Path alias: `@/*` → `./src/*`.
+
+## Collaboration Contract
+
+| Owner | File Ownership |
+|-------|----------------|
+| Backend engineer | `services/orchestrator/**`, `src/data/**`, `src/lib/types.ts`, `src/lib/api.ts` |
+| Frontend engineer | `src/app/**`, `src/components/**`, `src/app/globals.css` |
+
+Shared contract files (`types.ts`, `api.ts`) are owned by backend engineer. Frontend reads them, does not edit.
+
+## Implementation Plan
+
+Full plan with task breakdown, code, and demo script: `docs/plans/2026-03-11-wealth-wellness-hub-v2.md`
 
 ## Frontend
 
 **Stack:** Next.js 15, React 19, TypeScript, Tailwind CSS 4, Recharts, Lucide icons, shadcn-style UI primitives (built on @base-ui/react).
 
-**Theme:** Dark mode only (`<html className="dark">`). Design uses oklch colors, glassmorphism (`.glass-card`), and staggered fade-in animations. Fonts: Inter (sans) + Geist Mono.
+**Theme:** Dark mode only (`<html className="dark">`). oklch colors, glassmorphism (`.glass-card`), staggered fade-in animations. Fonts: Inter (sans) + Geist Mono.
 
 **Root layout** (`src/app/layout.tsx`): `TooltipProvider` → flex container with `Sidebar` + scrollable `<main>`.
 
-### Routes
+### Current Routes (v1 — being migrated to v2)
 
-**`/` — Dashboard** (`src/app/page.tsx`)
-- Bento grid layout (4-col desktop, 2-col tablet, 1-col mobile) with staggered animations.
-- Renders 6 dashboard widgets, all reading from static `mock-portfolio.json` import. No API calls, no state.
-- Header: "Good evening, Alex" + formatted date.
-
-**`/research` — Research Navigator** (`src/app/research/page.tsx`)
-- RAG-style research query interface. Two-column: answer (left) + citations (right).
-- State: `question`, `result`, `error`, `isLoading`.
-- Calls `queryResearch(question)` → `POST /research/query`.
-- 3 suggested prompts (Singapore liquidity, crypto exposure, Asia tech valuation).
-- Renders synthesized answer text + citation cards with source/snippet.
-
-**`/planning` — Financial Planning** (`src/app/planning/page.tsx`)
-- Scenario analysis interface. Two-column: summary+recommendation (left) + key metrics (right).
-- State: `question`, `result`, `error`, `isLoading`.
-- Calls `queryPlanning(question)` → `POST /planning/query`.
-- 3 suggested questions (property upgrade, liquidity buffer, portfolio concentration).
-- Renders scenario name, summary text, recommendation box, metric grid.
-
-**`/alerts` — Portfolio Alerts** (`src/app/alerts/page.tsx`)
-- Event-triggered alert monitor. Single "Run Alerts" button.
-- State: `result`, `error`, `isLoading`.
-- Calls `runAlerts(4)` → `POST /alerts/run`.
-- Renders alert cards with headline, source, event summary, impacted holdings, current price, recommendation.
-
-**`/api/portfolio`** (`src/app/api/portfolio/route.ts`)
-- GET endpoint that returns the entire `mock-portfolio.json` as JSON.
+- `/` — Dashboard bento grid with 6 widgets reading from static `mock-portfolio.json`
+- `/research` — RAG-style research query → `POST /research/query`
+- `/planning` — Scenario analysis → `POST /planning/query`
+- `/alerts` — Alert monitor → `POST /alerts/run`
+- `/api/portfolio` — GET endpoint returning `mock-portfolio.json`
 
 ### Dashboard Components (`src/components/dashboard/`)
 
-**NetWorthCard** — Displays total net worth ($535,520), trend badge (+2.36%), total assets/liabilities breakdown, monthly change. Color-coded: emerald for positive, rose for negative.
-
-**PortfolioChart** — Recharts donut pie chart of asset allocation (5 categories). Custom tooltip showing category/value/percentage. Right-side legend with color dots.
-
-**AssetTable** — Combined equities + crypto table sorted by value descending. Columns: asset (symbol+name+shares), price, 24h change (color-coded badge), total value.
-
-**HealthScore** — SVG circular progress ring (score out of 100) + 5 category progress bars (savings rate, debt ratio, diversification, emergency fund, investment growth). Color thresholds: emerald ≥80, amber ≥60, rose <60.
-
-**RecentTransactions** — ScrollArea (280px) showing 10 most recent transactions. Icon + color per type (buy/sell/deposit/withdrawal/dividend/interest/payment). Debit types show "-", credit types show "+".
-
-**MarketOverview** — 2×3 grid of hardcoded market indices (S&P 500, NASDAQ, STI, BTC, ETH, Gold) with static prices and change percentages.
+NetWorthCard, PortfolioChart (Recharts donut), AssetTable (equities+crypto sorted by value), HealthScore (SVG circular progress + 5 category bars), RecentTransactions (ScrollArea, 10 items), MarketOverview (hardcoded 6 indices).
 
 ### Sidebar (`src/components/shared/sidebar.tsx`)
 
-Collapsible sidebar (240px expanded, 68px collapsed). 4 nav items: Dashboard, Research, Planning, Alerts. Active route detection via `usePathname()`. Footer shows user profile ("Alex Chen", "Moderate Risk"). Tooltips appear when collapsed.
+Collapsible (240px/68px). 4 nav items. Active route via `usePathname()`. Footer: "Alex Chen", "Moderate Risk".
 
 ### UI Primitives (`src/components/ui/`)
 
-Shadcn-style components: Avatar, Badge, Button, Card, Chart, Dialog, Input, ScrollArea, Separator, Sheet, Skeleton, Table, Tabs, Tooltip. Used across multiple routes.
+Avatar, Badge, Button, Card, Chart, Dialog, Input, ScrollArea, Separator, Sheet, Skeleton, Table, Tabs, Tooltip.
 
 ### API Layer (`src/lib/api.ts`)
 
-Generic `request<T>(path, body)` function that POSTs JSON to the orchestrator. Three exports:
-- `queryResearch(question)` → `/research/query`
-- `queryPlanning(question)` → `/planning/query`
-- `runAlerts(limit=4)` → `/alerts/run`
+Legacy v1 functions + new v2 functions. v2 endpoints use `/v2/` prefix.
 
-### Type Definitions (`src/lib/types.ts`)
+### Types (`src/lib/types.ts`)
 
-- `ResearchResponse` — `{ answer, citations: [{ source, citation, snippet }] }`
-- `PlanningResponse` — `{ scenario, summary, recommendation, key_metrics: [{ label, value }] }`
-- `AlertsResponse` — `{ generated_at, alerts: [{ headline, source, eventSummary, impactedHoldings, recommendation, currentPrice }] }`
-
-### Utility (`src/lib/utils.ts`)
-
-`cn(...inputs)` — combines classnames via clsx + tailwind-merge.
+Legacy types (ResearchResponse, PlanningResponse, AlertsResponse) + v2 types (ClientSummary, ClientAnalytics, WellnessResponse, ImpactManifest, AlertBrief, CopilotResponse, ResearchSearchResponse).
 
 ## Mock Data
 
-### `src/data/mock-portfolio.json` — Client: Alex Chen
+### `src/data/mock-portfolio.json` — used by v1 dashboard (Alex Chen, USD values)
 
-- **Profile:** Age 34, Singapore, moderate risk, 1 dependent, $18,500/mo income, $7,200/mo fixed expenses, 10-15 year horizon.
-- **Net worth:** $535,520 ($847,520 assets − $312,000 liabilities), +$12,340/+2.36% monthly.
-- **Equities (6):** AAPL, MSFT, NVDA, GOOGL, AMZN, VOO — total ~$104,568.
-- **Crypto (3):** BTC (1.25), ETH (15.5), SOL (200) — total ~$211,023.
-- **Real estate:** Singapore condo, $920,000 current value.
-- **Bank deposits:** DBS Savings $45k, DBS FD $80k (3.5%, matures Sep 2026), OCBC Savings $32.5k — total $157,500.
-- **CPF:** OA $125k, SA $68k, MA $42k — total $235,000.
-- **Liabilities:** Mortgage $285k ($2,800/mo, 2.6%, 18yr) + Car loan $27k ($950/mo, 2.78%, 3yr).
-- **Health score:** 78/100 — savings 85, debt 72, diversification 80, emergency 68, growth 82.
-- **Allocation:** Real Estate 46.5%, Crypto 24.9%, Equities 12.3%, Bank 10.8%, CPF 5.5%.
+Net worth $535,520. Equities (6): AAPL, MSFT, NVDA, GOOGL, AMZN, VOO. Crypto (3): BTC, ETH, SOL. Real estate: SGD 920k condo. Bank deposits: SGD 157.5k. CPF: SGD 235k. Liabilities: mortgage $285k + car loan $27k.
 
-### `src/data/mock-transactions.json` — 15 transactions
+### `services/orchestrator/data/clients/` — used by v2 analytics (SGD values)
 
-Mix of buy, sell, deposit, withdrawal, dividend, interest, payment. Most recent: 2026-03-10 (buy 5 NVDA).
+3 clients: `alex_chen.json` (moderate, full portfolio), `priya_sharma.json` (aggressive, tech+crypto heavy), `david_lim.json` (conservative, bonds+property).
+
+### `src/data/mock-transactions.json` — 15 transactions (buy/sell/deposit/withdrawal/dividend/interest/payment)
 
 ## Backend (`services/orchestrator/`)
 
-**Stack:** FastAPI, Pydantic, Python 3.11+.
+**Stack:** FastAPI, Pydantic v2, Python 3.11+, rank_bm25, OpenAI SDK (pointing at NVIDIA NIM endpoint, model `moonshotai/kimi-k2.5`).
 
-**Config** (`app/config.py`): Env vars `FINNHUB_API_KEY` (optional, falls back to mock news), `ALPHA_VANTAGE_API_KEY` (defined but unused), `WEALTHOS_CORS_ORIGINS` (default localhost:3000).
+**Config** (`app/config.py`): Auto-loads `.env.local` from repo root. Keys: `NVIDIA_API_KEY` (NVIDIA NIM LLM — falls back to seeded responses if missing), `FINNHUB_API_KEY`, `FINLIGHT_API_KEY`, `ALPHA_VANTAGE_API_KEY`, `WEALTHOS_CORS_ORIGINS`.
 
-**CORS:** Allows localhost:3000 and 127.0.0.1:3000.
+### v1 Endpoints (legacy, still working)
 
-### Endpoints
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/health` | Health check |
+| POST | `/research/query` | Keyword-based research search |
+| POST | `/planning/query` | Scenario planning (property/liquidity/risk) |
+| POST | `/alerts/run` | Portfolio alerts from mock/Finnhub news |
 
-| Method | Path | Request | Response |
-|--------|------|---------|----------|
-| GET | `/health` | — | `{ status: "ok" }` |
-| POST | `/research/query` | `{ question, limit? }` | `{ answer, citations }` |
-| POST | `/planning/query` | `{ question }` | `{ scenario, summary, recommendation, key_metrics }` |
-| POST | `/alerts/run` | `{ limit? }` | `{ generated_at, alerts }` |
+### v2 Endpoints (new)
 
-### Intent Classification (`app/orchestrator.py`)
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/v2/clients` | List all clients with summary wellness scores |
+| GET | `/v2/clients/{id}/analytics` | Full deterministic analytics for one client |
+| GET | `/v2/clients/{id}/wellness` | Wellness score + 5 sub-scores + top risks |
+| GET | `/v2/events` | List seeded market events |
+| POST | `/v2/events/impact` | Compute impact manifest for event × client |
+| POST | `/v2/alerts/generate` | LLM alert brief (seeded fallback if no API key) |
+| POST | `/v2/copilot/query` | LLM copilot advisory (seeded fallback if no API key) |
+| POST | `/v2/research/search` | BM25 search over markdown corpus |
 
-`classify_intent(question)` — keyword matching:
-- "alert/headline/news/portfolio event" → alerts
-- "afford/property/liquidity/plan/risk profile" → planning
-- Everything else → research
+### Backend Modules
 
-### Workflow: Research (`app/workflows/research.py`)
+**Analytics layer** (deterministic — LLM never touches these numbers):
+- `app/analytics/engine.py` — 8 core calculations: net worth, allocation, liquid reserves, liquidity runway, DSR, concentration risk, diversification score, digital exposure
+- `app/analytics/wellness.py` — composite wellness score (0-100, weighted from 5 sub-scores) + behavioral resilience proxy
+- `app/analytics/assembler.py` — combines engine + wellness into full client response objects
 
-1. `search_corpus(question, limit)` — tokenize query, remove stopwords, score chunks by exact token match (+1) and phrase bonus (3-word +4, 2-word +2), return top N.
-2. Format answer from top citation + supporting sources list.
-3. Return answer + citations array.
+**Data layer:**
+- `app/data/clients.py` — multi-client JSON loader from `data/clients/`
+- `app/data/research_index.py` — BM25Okapi search over `data/research_corpus/*.md`
 
-### Workflow: Planning (`app/workflows/planning.py`)
+**Event pipeline:**
+- `app/events/pipeline.py` — load seeded events, map entities to securities via `data/entity_security_map.json`, compute client exposure, classify severity (LOW/MODERATE/HIGH/CRITICAL)
 
-1. Load client profile, portfolio snapshot, risk profile.
-2. Infer scenario from keywords: `property-upgrade`, `liquidity-buffer`, or `risk-rebalance` (default).
-3. Run scenario-specific calculations:
-   - **Property upgrade:** Standard mortgage calc (25% down, 4% rate, 25yr). Checks affordability (surplus ≥0 AND debt service ratio ≤0.7). Returns monthly payment, surplus, liquidity runway.
-   - **Liquidity buffer:** `liquid_reserves / monthly_expenses` = months of runway.
-   - **Risk rebalance:** Extracts crypto allocation %, calculates free cash flow, flags concentration risk for moderate-risk profile.
-4. Return scenario name, summary, recommendation, key metrics.
+**Advisory layer** (LLM with seeded fallbacks):
+- `app/advisory/llm_client.py` — NVIDIA NIM wrapper (OpenAI SDK → `integrate.api.nvidia.com/v1`, model `moonshotai/kimi-k2.5`, 15s timeout)
+- `app/advisory/alerts.py` — alert brief generation with house-view evidence injection
+- `app/advisory/copilot.py` — copilot response with client analytics + research context injection
 
-### Workflow: Alerts (`app/workflows/alerts.py`)
+**Seeded fallback data:**
+- `data/seeded_events.json` — 3 curated market events (crypto crash, Fed rates, Nvidia export ban)
+- `data/seeded_alerts.json` — pre-written alert briefs matching each event
+- `data/seeded_copilot.json` — pre-written copilot responses for 4 demo prompt chips
+- `data/entity_security_map.json` — entity name → ticker lookup
 
-1. Extract all symbols from portfolio (equities + crypto).
-2. For each symbol, fetch news via `get_company_news(symbol)` — uses Finnhub API if key set, otherwise mock data.
-3. Deduplicate by headline, limit to N alerts.
-4. For each alert, get current price from portfolio data and generate recommendation:
-   - Crypto symbols (BTC/ETH/SOL): position sizing + liquidity advice.
-   - Moderate risk tolerance: monitor but avoid reactive trading.
-   - Default: monitor against risk budget.
+**Legacy modules** (v1, still working):
+- `app/tools/client_data.py` — loads `data/client_profile.json` + `src/data/mock-portfolio.json`
+- `app/tools/market_data.py` — Finnhub API + mock news fallback
+- `app/tools/planning_calculators.py` — affordability, liquidity buffer, cashflow calculators
+- `app/tools/research_store.py` — keyword-based corpus search (replaced by BM25 in v2)
+- `app/workflows/` — v1 workflow orchestration for research, planning, alerts
 
-### Tools
+### Research Corpus (`data/research_corpus/`)
 
-**Client Data** (`app/tools/client_data.py`):
-- `get_client_profile()` — loads `data/client_profile.json` (lru_cache, returns deepcopy).
-- `get_portfolio_snapshot()` — loads `src/data/mock-portfolio.json` (lru_cache, returns deepcopy).
-- `get_risk_profile()` — derives from client profile: clientName, jurisdiction, riskTolerance, investmentHorizon.
-
-**Market Data** (`app/tools/market_data.py`):
-- `get_company_news(symbol)` — Finnhub API with 5s timeout, falls back to mock news for AAPL/NVDA/BTC/ETH.
-- `get_market_quote(symbol)` — looks up currentPrice from portfolio snapshot (equities then crypto). Returns None if not found.
-
-**Planning Calculators** (`app/tools/planning_calculators.py`):
-- `calculate_affordability(property_price, down_payment_ratio, annual_interest_rate, loan_term_years, monthly_income, monthly_fixed_expenses)` — standard mortgage amortization formula.
-- `calculate_liquidity_buffer(liquid_reserves, monthly_fixed_expenses)` — simple division.
-- `calculate_cashflow_after_scenario(monthly_income, monthly_fixed_expenses, additional_monthly_costs)` — simple subtraction.
-
-**Research Store** (`app/tools/research_store.py`):
-- `load_corpus()` — reads `data/research_corpus/*.md`, splits into paragraph chunks, indexes as `{source, citation, content}`.
-- `search_corpus(query, limit)` — tokenize + stopword removal + scoring (token match + phrase bonus).
-
-### Research Corpus (`services/orchestrator/data/research_corpus/`)
-
-3 markdown documents, each split into ~3 paragraph chunks:
-- `singapore-household-liquidity.md` — liquidity buffer best practices for Singapore households.
-- `digital-asset-risk-playbook.md` — risk management for concentrated crypto exposure.
-- `asia-tech-equity-outlook.md` — Asia tech equity valuation and accumulation strategy.
-
-### Backend Data (`services/orchestrator/data/client_profile.json`)
-
-Same Alex Chen profile as frontend mock data (name, age, jurisdiction, risk tolerance, income, expenses, goals).
+3 markdown docs (~3 chunks each): singapore-household-liquidity, digital-asset-risk-playbook, asia-tech-equity-outlook.
 
 ### Tests
 
-5 test files covering: health endpoint, intent classification, research corpus search, client data loading, planning calculator math, alerts workflow symbol extraction.
+Run `python3 -m pytest -q` from `services/orchestrator/`. Covers: health endpoint, intent classification, research search (v1+v2), client data loading, planning calculators, alerts workflow, analytics engine, wellness score, assembler, event pipeline, v2 endpoints, golden-path integration test.
