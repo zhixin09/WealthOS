@@ -1,174 +1,145 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { Calculator, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
 
+import { ClientSelector } from "@/components/adviser/client-selector";
+import { CopilotPanel } from "@/components/adviser/copilot-panel";
+import { LoadingSpinner } from "@/components/adviser/loading-spinner";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { queryPlanning } from "@/lib/api";
-import type { PlanningResponse } from "@/lib/types";
-
-const SUGGESTED_QUESTIONS = [
-  "Can I afford a $1.2M property upgrade next year without selling core equities?",
-  "How strong is my liquidity buffer right now?",
-  "Is my portfolio too concentrated for a moderate-risk profile?",
-];
+  getClientAnalytics,
+  getClientWellness,
+} from "@/components/adviser/adviser-api";
+import type {
+  ClientAnalytics,
+  WellnessResponse,
+} from "@/components/adviser/contracts";
+import {
+  formatSgd,
+  getWellnessTone,
+} from "@/components/adviser/presentation";
+import { useActiveClient } from "@/components/shared/client-context";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function PlanningPage() {
-  const [question, setQuestion] = useState(SUGGESTED_QUESTIONS[0]);
-  const [result, setResult] = useState<PlanningResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { activeClientId } = useActiveClient();
+  const [analytics, setAnalytics] = useState<ClientAnalytics | null>(null);
+  const [wellness, setWellness] = useState<WellnessResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setIsLoading(true);
-    setError(null);
+  useEffect(() => {
+    let cancelled = false;
 
-    try {
-      const data = await queryPlanning(question);
-      setResult(data);
-    } catch (submissionError) {
-      setResult(null);
-      setError(
-        submissionError instanceof Error
-          ? submissionError.message
-          : "Unable to run planning analysis right now.",
-      );
-    } finally {
-      setIsLoading(false);
+    async function loadContext() {
+      setIsLoading(true);
+      setAnalytics(null);
+      setWellness(null);
+
+      try {
+        const [analyticsResponse, wellnessResponse] = await Promise.all([
+          getClientAnalytics(activeClientId),
+          getClientWellness(activeClientId),
+        ]);
+
+        if (!cancelled) {
+          setAnalytics(analyticsResponse);
+          setWellness(wellnessResponse);
+        }
+      } catch {
+        if (!cancelled) {
+          setAnalytics(null);
+          setWellness(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
     }
-  }
+
+    void loadContext();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeClientId]);
+
+  const tone = getWellnessTone(wellness?.wellness_score ?? 71);
 
   return (
-    <div className="min-h-screen space-y-6 p-6 lg:p-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">Financial Planning</h1>
-        <p className="text-sm text-muted-foreground">
-          Run structured planning scenarios using the client profile, liabilities,
-          and liquidity position already loaded into WealthOS.
-        </p>
+    <div className="min-h-screen space-y-6 bg-zinc-950 p-6 lg:p-8">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div>
+          <h1 className="text-lg font-semibold tracking-tight text-zinc-50">
+            Adviser Copilot
+          </h1>
+          <p className="mt-1 text-sm text-zinc-400">
+            Advisory prompts grounded in client analytics and house-view
+            research.
+          </p>
+        </div>
+        <ClientSelector />
       </div>
 
-      <Card className="border-border/50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-4 w-4 text-primary" />
-            Ask a planning question
-          </CardTitle>
-          <CardDescription>
-            The assistant uses deterministic financial calculations before it
-            produces a recommendation.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <form className="flex flex-col gap-3 md:flex-row" onSubmit={handleSubmit}>
-            <Input
-              value={question}
-              onChange={(event) => setQuestion(event.target.value)}
-              placeholder="Ask about property affordability, liquidity, or portfolio risk"
-              className="md:flex-1"
-            />
-            <Button type="submit" disabled={isLoading || question.trim().length === 0}>
-              {isLoading ? "Analyzing..." : "Run Analysis"}
-            </Button>
-          </form>
-
-          <div className="flex flex-wrap gap-2">
-            {SUGGESTED_QUESTIONS.map((suggestion) => (
-              <Button
-                key={suggestion}
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setQuestion(suggestion)}
-              >
-                {suggestion}
-              </Button>
-            ))}
-          </div>
+      <Card className="rounded-lg border border-zinc-800 bg-zinc-900/85 p-0">
+        <CardContent className="p-4">
+          {isLoading && !analytics && !wellness ? (
+            <LoadingSpinner label="Loading client context" />
+          ) : analytics && wellness ? (
+            <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-start">
+              <div className="min-w-[180px]">
+                <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">
+                  Net Worth
+                </p>
+                <p className="mt-2 text-3xl font-bold font-mono text-zinc-50">
+                  {formatSgd(analytics.net_worth_sgd, true)}
+                </p>
+              </div>
+              <div className="min-w-[150px]">
+                <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">
+                  Wellness
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <p className={`text-2xl font-bold font-mono ${tone.text}`}>
+                    {wellness.wellness_score.toFixed(0)}/100
+                  </p>
+                  <Badge className={tone.badge}>{wellness.rating}</Badge>
+                </div>
+              </div>
+              <div className="min-w-[140px]">
+                <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">
+                  DSR
+                </p>
+                <p className="mt-2 text-2xl font-bold font-mono text-zinc-50">
+                  {(analytics.dsr * 100).toFixed(1)}%
+                </p>
+              </div>
+              <div className="min-w-[170px]">
+                <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">
+                  Liquidity
+                </p>
+                <p className="mt-2 text-2xl font-bold font-mono text-zinc-50">
+                  {analytics.liquidity_runway_months.toFixed(1)} months
+                </p>
+              </div>
+              <div className="flex-1">
+                <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">
+                  Top Risk
+                </p>
+                <p className="mt-2 text-sm leading-6 text-zinc-300">
+                  {wellness.top_risks[0]}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed border-zinc-800 bg-zinc-950/60 p-8 text-sm text-zinc-500">
+              Client context is not available right now.
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="border-border/50">
-          <CardHeader>
-            <CardTitle>Planning Summary</CardTitle>
-            <CardDescription>
-              Scenario interpretation grounded in current household data.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {error ? (
-              <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-                {error}
-              </div>
-            ) : result ? (
-              <>
-                <div className="rounded-lg border border-border/60 bg-accent/20 p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-primary">
-                    Scenario
-                  </p>
-                  <p className="mt-1 text-sm font-medium text-foreground/90">
-                    {result.scenario}
-                  </p>
-                </div>
-                <p className="text-sm leading-6 text-foreground/90">
-                  {result.summary}
-                </p>
-                <div className="rounded-lg border border-emerald/20 bg-emerald/10 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-emerald">
-                    <ShieldCheck className="h-4 w-4" />
-                    Recommendation
-                  </div>
-                  <p className="text-sm leading-6 text-foreground/90">
-                    {result.recommendation}
-                  </p>
-                </div>
-              </>
-            ) : (
-              <div className="rounded-lg border border-dashed border-border/60 bg-accent/20 p-8 text-sm text-muted-foreground">
-                Submit a planning question to generate scenario guidance.
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/50">
-          <CardHeader>
-            <CardTitle>Key Numbers</CardTitle>
-            <CardDescription>
-              Deterministic metrics used to support the recommendation.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {result?.key_metrics.length ? (
-              result.key_metrics.map((metric) => (
-                <div
-                  key={metric.label}
-                  className="rounded-lg border border-border/60 bg-accent/20 p-3"
-                >
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    {metric.label}
-                  </p>
-                  <p className="mt-1 text-lg font-semibold">{metric.value}</p>
-                </div>
-              ))
-            ) : (
-              <div className="rounded-lg border border-dashed border-border/60 bg-accent/20 p-8 text-sm text-muted-foreground">
-                Key scenario metrics will appear here after analysis runs.
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      <CopilotPanel clientId={activeClientId} />
     </div>
   );
 }

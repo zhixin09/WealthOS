@@ -1,121 +1,179 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, TriangleAlert } from "lucide-react";
+import { useEffect, useState } from "react";
 
+import { AlertBriefPanel } from "@/components/adviser/alert-brief-panel";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { runAlerts as requestAlerts } from "@/lib/api";
-import type { AlertsResponse } from "@/lib/types";
+  generateAlertBrief,
+  getEvents,
+  runEventImpact,
+} from "@/components/adviser/adviser-api";
+import { ClientSelector } from "@/components/adviser/client-selector";
+import { EventCard } from "@/components/adviser/event-card";
+import { ImpactManifestPanel } from "@/components/adviser/impact-manifest-panel";
+import { LoadingSpinner } from "@/components/adviser/loading-spinner";
+import type {
+  AlertBrief,
+  ImpactManifest,
+  SeededEvent,
+} from "@/components/adviser/contracts";
+import { Card, CardContent } from "@/components/ui/card";
+import { useActiveClient } from "@/components/shared/client-context";
 
 export default function AlertsPage() {
-  const [result, setResult] = useState<AlertsResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { activeClientId } = useActiveClient();
+  const [events, setEvents] = useState<SeededEvent[]>([]);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [impact, setImpact] = useState<ImpactManifest | null>(null);
+  const [brief, setBrief] = useState<AlertBrief | null>(null);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [isLoadingImpact, setIsLoadingImpact] = useState(false);
+  const [isLoadingBrief, setIsLoadingBrief] = useState(false);
+  const [view, setView] = useState<"events" | "impact" | "brief">("events");
 
-  async function runAlerts() {
-    setIsLoading(true);
-    setError(null);
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadEvents() {
+      setIsLoadingEvents(true);
+
+      try {
+        const response = await getEvents();
+        if (!cancelled) {
+          setEvents(response);
+        }
+      } catch {
+        if (!cancelled) {
+          setEvents([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingEvents(false);
+        }
+      }
+    }
+
+    void loadEvents();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    setView("events");
+    setSelectedEventId(null);
+    setImpact(null);
+    setBrief(null);
+    setIsLoadingImpact(false);
+    setIsLoadingBrief(false);
+  }, [activeClientId]);
+
+  async function handleEventClick(eventId: string) {
+    setSelectedEventId(eventId);
+    setView("impact");
+    setImpact(null);
+    setBrief(null);
+    setIsLoadingImpact(true);
 
     try {
-      const data = await requestAlerts(4);
-      setResult(data);
-    } catch (runError) {
-      setResult(null);
-      setError(
-        runError instanceof Error
-          ? runError.message
-          : "Unable to generate alerts right now.",
-      );
+      const response = await runEventImpact(eventId, activeClientId);
+      setImpact(response);
+    } catch {
+      setImpact(null);
     } finally {
-      setIsLoading(false);
+      setIsLoadingImpact(false);
+    }
+  }
+
+  async function handleGenerateBrief() {
+    if (!selectedEventId) {
+      return;
+    }
+
+    setIsLoadingBrief(true);
+    setView("brief");
+    setBrief(null);
+
+    try {
+      const response = await generateAlertBrief(selectedEventId, activeClientId);
+      setBrief(response);
+    } catch {
+      setBrief(null);
+    } finally {
+      setIsLoadingBrief(false);
     }
   }
 
   return (
-    <div className="min-h-screen space-y-6 p-6 lg:p-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">Portfolio Alerts</h1>
-        <p className="text-sm text-muted-foreground">
-          Monitor holdings against fresh market events and surface alerts that
-          matter for the actual portfolio.
-        </p>
+    <div className="min-h-screen bg-zinc-950 p-6 lg:p-8">
+      <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div>
+          <h1 className="text-lg font-semibold tracking-tight text-zinc-50">
+            Event-To-Impact Alert Centre
+          </h1>
+          <p className="mt-1 text-sm text-zinc-400">
+            Progress from market event to exposure manifest to an adviser-ready
+            brief.
+          </p>
+        </div>
+        <ClientSelector />
       </div>
 
-      <Card className="border-border/50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-4 w-4 text-primary" />
-            Event-triggered monitoring
-          </CardTitle>
-          <CardDescription>
-            The MVP checks owned symbols against market news and returns
-            portfolio-specific alerts with recommendations.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={runAlerts} disabled={isLoading}>
-            {isLoading ? "Scanning..." : "Run Alerts"}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {error ? (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-          {error}
-        </div>
-      ) : null}
-
-      <div className="grid gap-4">
-        {result?.alerts.length ? (
-          result.alerts.map((alert) => (
-            <Card key={`${alert.headline}-${alert.source}`} className="border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TriangleAlert className="h-4 w-4 text-amber" />
-                  {alert.headline}
-                </CardTitle>
-                <CardDescription>
-                  Source: {alert.source} · Impacted holdings: {alert.impactedHoldings.join(", ")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm leading-6 text-foreground/90">
-                  {alert.eventSummary}
-                </p>
-                {alert.currentPrice ? (
-                  <div className="rounded-lg border border-border/60 bg-accent/20 p-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      Current price
-                    </p>
-                    <p className="mt-1 text-lg font-semibold">
-                      ${alert.currentPrice.toLocaleString()}
-                    </p>
-                  </div>
-                ) : null}
-                <div className="rounded-lg border border-emerald/20 bg-emerald/10 p-4">
-                  <p className="text-sm font-semibold text-emerald">Recommendation</p>
-                  <p className="mt-2 text-sm leading-6 text-foreground/90">
-                    {alert.recommendation}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))
+      {view === "events" ? (
+        isLoadingEvents ? (
+          <LoadingSpinner label="Loading event feed" />
+        ) : events.length > 0 ? (
+          <div className="grid gap-4">
+            {events.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onClick={() => void handleEventClick(event.id)}
+              />
+            ))}
+          </div>
         ) : (
-          <Card className="border-border/50 border-dashed">
-            <CardContent className="py-16 text-sm text-muted-foreground">
-              Run the workflow to generate portfolio-specific alerts.
+          <Card className="rounded-lg border border-dashed border-zinc-800 bg-zinc-900/85">
+            <CardContent className="py-16 text-sm text-zinc-500">
+              No events are available right now.
             </CardContent>
           </Card>
-        )}
-      </div>
+        )
+      ) : null}
+
+      {view === "impact" ? (
+        isLoadingImpact ? (
+          <LoadingSpinner label="Computing client exposure" />
+        ) : impact ? (
+          <ImpactManifestPanel
+            impact={impact}
+            onGenerateBrief={() => void handleGenerateBrief()}
+            onBack={() => setView("events")}
+            isGeneratingBrief={isLoadingBrief}
+          />
+        ) : (
+          <Card className="rounded-lg border border-dashed border-zinc-800 bg-zinc-900/85">
+            <CardContent className="py-16 text-sm text-zinc-500">
+              Impact analysis is unavailable for the selected event.
+            </CardContent>
+          </Card>
+        )
+      ) : null}
+
+      {view === "brief" ? (
+        isLoadingBrief && !brief ? (
+          <LoadingSpinner label="Generating adviser brief" />
+        ) : brief ? (
+          <AlertBriefPanel brief={brief} onBack={() => setView("impact")} />
+        ) : (
+          <Card className="rounded-lg border border-dashed border-zinc-800 bg-zinc-900/85">
+            <CardContent className="py-16 text-sm text-zinc-500">
+              Adviser brief generation is unavailable for this event.
+            </CardContent>
+          </Card>
+        )
+      ) : null}
     </div>
   );
 }

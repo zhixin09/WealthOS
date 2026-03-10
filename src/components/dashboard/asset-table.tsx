@@ -25,93 +25,91 @@ type Asset = {
 };
 
 export function AssetTable() {
-    const equities = portfolioData.assets.equities as Asset[];
-    const crypto = portfolioData.assets.crypto as Asset[];
-    const allAssets = [
-        ...equities.map((a) => ({ ...a, type: "Equity" })),
-        ...crypto.map((a) => ({ ...a, type: "Crypto" })),
-    ].sort((a, b) => b.value - a.value);
+  const equities = portfolioData.assets.equities as Asset[];
+  const crypto = portfolioData.assets.crypto as Asset[];
+  const allAssets = [
+    ...equities.map((asset) => ({ ...asset, type: "Equity" })),
+    ...crypto.map((asset) => ({ ...asset, type: "Crypto" })),
+  ].sort((left, right) => right.value - left.value);
 
-    return (
-        <Card className="border-border/50">
-            <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Holdings
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="px-0">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="border-border/50 hover:bg-transparent">
-                            <TableHead className="pl-6 text-[10px] font-semibold uppercase tracking-wider">
-                                Asset
-                            </TableHead>
-                            <TableHead className="text-right text-[10px] font-semibold uppercase tracking-wider">
-                                Price
-                            </TableHead>
-                            <TableHead className="text-right text-[10px] font-semibold uppercase tracking-wider">
-                                24h
-                            </TableHead>
-                            <TableHead className="pr-6 text-right text-[10px] font-semibold uppercase tracking-wider">
-                                Value
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {allAssets.map((asset) => {
-                            const isPositive = asset.change24h >= 0;
-                            const qty = asset.shares || asset.quantity || 0;
-                            return (
-                                <TableRow
-                                    key={asset.symbol}
-                                    className="border-border/30 transition-colors"
-                                >
-                                    <TableCell className="pl-6">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-[10px] font-bold">
-                                                {asset.symbol.slice(0, 3)}
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium">{asset.symbol}</p>
-                                                <p className="text-[10px] text-muted-foreground">
-                                                    {qty} {asset.type === "Crypto" ? "units" : "shares"}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <span className="text-sm font-medium">
-                                            ${asset.currentPrice.toLocaleString()}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Badge
-                                            variant="secondary"
-                                            className={`text-[10px] font-semibold ${isPositive
-                                                    ? "bg-emerald-muted text-emerald"
-                                                    : "bg-rose-muted text-rose"
-                                                }`}
-                                        >
-                                            {isPositive ? (
-                                                <TrendingUp className="mr-1 h-2.5 w-2.5" />
-                                            ) : (
-                                                <TrendingDown className="mr-1 h-2.5 w-2.5" />
-                                            )}
-                                            {isPositive ? "+" : ""}
-                                            {asset.change24h}%
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="pr-6 text-right">
-                                        <span className="text-sm font-semibold">
-                                            ${asset.value.toLocaleString()}
-                                        </span>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-    );
+  return (
+    <Card className="rounded-lg border border-zinc-800 bg-zinc-900/85 py-0">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-semibold uppercase tracking-[0.22em] text-zinc-500">
+          Holdings Ledger
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="px-0">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-zinc-800 hover:bg-transparent">
+              <TableHead className="pl-6 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+                Asset
+              </TableHead>
+              <TableHead className="text-right text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+                Price
+              </TableHead>
+              <TableHead className="text-right text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+                24h
+              </TableHead>
+              <TableHead className="pr-6 text-right text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+                Value
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {allAssets.map((asset) => {
+              const isPositive = asset.change24h >= 0;
+              const quantity = asset.shares || asset.quantity || 0;
+
+              return (
+                <TableRow
+                  key={asset.symbol}
+                  className="border-zinc-800/70 transition-colors hover:bg-zinc-800/25"
+                >
+                  <TableCell className="pl-6">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-950 text-[10px] font-bold text-zinc-300">
+                        {asset.symbol.slice(0, 3)}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-zinc-100">{asset.symbol}</p>
+                        <p className="text-[10px] text-zinc-500">
+                          {quantity} {asset.type === "Crypto" ? "units" : "shares"}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span className="text-sm font-medium text-zinc-100 font-mono">
+                      ${asset.currentPrice.toLocaleString()}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge
+                      variant="secondary"
+                      className={`text-[10px] font-semibold ${isPositive ? "bg-emerald-muted text-emerald" : "bg-rose-muted text-rose"}`}
+                    >
+                      {isPositive ? (
+                        <TrendingUp className="mr-1 h-2.5 w-2.5" />
+                      ) : (
+                        <TrendingDown className="mr-1 h-2.5 w-2.5" />
+                      )}
+                      {isPositive ? "+" : ""}
+                      {asset.change24h}%
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="pr-6 text-right">
+                    <span className="text-sm font-semibold text-zinc-50 font-mono">
+                      ${asset.value.toLocaleString()}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
 }

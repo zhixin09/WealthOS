@@ -5,6 +5,7 @@
 | Area | Owner | Status | Notes |
 | --- | --- | --- | --- |
 | Backend v2 analytics/events/advisory + shared API contracts | Codex | Done | Implemented the Wealth Wellness Hub v2 backend surface in `services/orchestrator/**` and updated the shared contracts in `src/lib/types.ts` and `src/lib/api.ts`. Frontend-owned `src/app/**` and `src/components/**` remained untouched. |
+| Adviser terminal frontend (`src/app/**`, `src/components/**`, `src/app/globals.css`) | Codex | In Progress | Rebuilding dashboard, alerts, planning, and research around a shared active-client context and v2-compatible frontend adapters. |
 | README setup docs | Codex | Done | Beginner-first onboarding now covers blank-machine setup, backend dependency install, and two-terminal local startup. |
 
 ## Handoff Notes
@@ -17,6 +18,15 @@
 - Files: `services/orchestrator/app/analytics/*`, `services/orchestrator/app/advisory/*`, `services/orchestrator/app/data/*`, `services/orchestrator/app/events/*`, `services/orchestrator/app/routes/v2.py`, `services/orchestrator/app/main.py`, `services/orchestrator/app/models.py`, `services/orchestrator/data/clients/*.json`, `services/orchestrator/data/seeded_*.json`, `services/orchestrator/data/entity_security_map.json`, `services/orchestrator/pyproject.toml`, `services/orchestrator/tests/test_clients_loader.py`, `services/orchestrator/tests/test_analytics_engine.py`, `services/orchestrator/tests/test_wellness.py`, `services/orchestrator/tests/test_assembler.py`, `services/orchestrator/tests/test_event_pipeline.py`, `services/orchestrator/tests/test_bm25_search.py`, `services/orchestrator/tests/test_llm_client.py`, `services/orchestrator/tests/test_v2_endpoints.py`, `services/orchestrator/tests/test_golden_path.py`, `src/lib/types.ts`, `src/lib/api.ts`, `CLAUDE.md`, `docs/worklog.md`
 - Risks: live `/v2/alerts/generate` and `/v2/copilot/query` will attempt NVIDIA NIM first when `NVIDIA_API_KEY` is present, so latency depends on that upstream even though seeded fallbacks remain in place.
 - Next: frontend can wire the new `src/lib/api.ts` v2 helpers and types into the dashboard/research/alerts surfaces, and optionally align any product copy with the final seeded advisory text.
+
+### 2026-03-11 - Adviser terminal frontend rebuild
+
+- Owner: Codex
+- Status: in progress
+- Changed: Rebuilt the frontend around an adviser-terminal flow with a shared active-client context, new adviser components, dashboard header/book/wellness surfaces, a three-state alerts journey, a copilot planning page, and a research navigator. Added a frontend-owned v2 compatibility adapter that prefers `/v2/*` endpoints and keeps seeded demo fallbacks in place for demo safety.
+- Files: `docs/worklog.md`, `src/app/layout.tsx`, `src/app/page.tsx`, `src/app/alerts/page.tsx`, `src/app/planning/page.tsx`, `src/app/research/page.tsx`, `src/app/globals.css`, `src/components/shared/sidebar.tsx`, `src/components/shared/client-context.tsx`, `src/components/dashboard/net-worth-card.tsx`, `src/components/dashboard/portfolio-chart.tsx`, `src/components/dashboard/asset-table.tsx`, `src/components/dashboard/recent-transactions.tsx`, `src/components/dashboard/market-overview.tsx`, `src/components/adviser/*`
+- Risks: this branch still uses a local compatibility adapter rather than the shared `src/lib/api.ts` v2 helpers now available on `main`, and `npm run lint` / `npm run build` did not complete within the current shell session. This shell also could not source Node 22 via `~/.nvm/nvm.sh` because that path does not exist here.
+- Next: rerun lint/build in a Node 22 shell, verify the four-page demo path against a live frontend, and decide whether to converge the frontend back onto the shared `src/lib/api.ts` v2 helpers or keep the local adapter for fallback behavior.
 
 ### 2026-03-11 - README onboarding rewrite
 

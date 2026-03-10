@@ -50,41 +50,42 @@ const marketIndices = [
 ];
 
 export function MarketOverview() {
-    return (
-        <Card className="border-border/50">
-            <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Market Overview
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-2 gap-2">
-                    {marketIndices.map((index) => (
-                        <div
-                            key={index.symbol}
-                            className="flex items-center justify-between rounded-lg bg-accent/30 px-3 py-2.5 transition-colors hover:bg-accent/50"
-                        >
-                            <div>
-                                <p className="text-[10px] font-medium text-muted-foreground">
-                                    {index.name}
-                                </p>
-                                <p className="text-sm font-semibold">{index.value}</p>
-                            </div>
-                            <div
-                                className={`flex items-center gap-1 text-xs font-semibold ${index.isPositive ? "text-emerald" : "text-rose"
-                                    }`}
-                            >
-                                {index.isPositive ? (
-                                    <TrendingUp className="h-3 w-3" />
-                                ) : (
-                                    <TrendingDown className="h-3 w-3" />
-                                )}
-                                {index.change}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </CardContent>
-        </Card>
-    );
+  return (
+    <Card className="rounded-lg border border-zinc-800 bg-zinc-900/85 py-0">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold uppercase tracking-[0.22em] text-zinc-500">
+          Market Overview
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-2">
+          {marketIndices.map((index) => (
+            <div
+              key={index.symbol}
+              className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/60 px-3 py-2.5 transition-colors hover:bg-zinc-800/50"
+            >
+              <div>
+                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500">
+                  {index.name}
+                </p>
+                <p className="text-sm font-semibold text-zinc-100 font-mono">
+                  {index.value}
+                </p>
+              </div>
+              <div
+                className={`flex items-center gap-1 text-xs font-semibold font-mono ${index.isPositive ? "text-emerald" : "text-rose"}`}
+              >
+                {index.isPositive ? (
+                  <TrendingUp className="h-3 w-3" />
+                ) : (
+                  <TrendingDown className="h-3 w-3" />
+                )}
+                {index.change}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
