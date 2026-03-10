@@ -10,6 +10,7 @@ import { LoadingSpinner } from "@/components/adviser/loading-spinner";
 import { queryCopilot } from "@/components/adviser/adviser-api";
 import type { CopilotResponse } from "@/components/adviser/contracts";
 import { getUrgencyTone } from "@/components/adviser/presentation";
+import { dedupeResearchUsage } from "@/components/adviser/research-usage";
 
 const PROMPTS = [
   "What are the top 3 actions for this client this quarter?",
@@ -22,6 +23,7 @@ export function CopilotPanel({ clientId }: { clientId: string }) {
   const [question, setQuestion] = useState(PROMPTS[0]);
   const [response, setResponse] = useState<CopilotResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const researchUsed = response ? dedupeResearchUsage(response.research_used) : [];
 
   async function submitQuestion(nextQuestion: string) {
     setQuestion(nextQuestion);
@@ -119,7 +121,7 @@ export function CopilotPanel({ clientId }: { clientId: string }) {
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-zinc-500">
                   Research Used
                 </p>
-                {response.research_used.map((item) => (
+                {researchUsed.map((item) => (
                   <Badge
                     key={item.doc}
                     className="border border-zinc-700 bg-zinc-950 text-zinc-300"
